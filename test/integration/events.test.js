@@ -121,4 +121,51 @@ describe('Events API - /api/v1/events', () => {
 
     expect(res.status).to.equal(401);
   });
+
+  // PUT /events/:id
+  it('deve atualizar um evento existente', async () => {
+    const created = await request(app)
+      .post('/api/v1/events')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...validEvent, name: 'Evento Para Atualizar', date: '2028-02-01T20:00:00.000Z' });
+
+    const res = await request(app)
+      .put(`/api/v1/events/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ venue: 'Novo Local Atualizado' });
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('venue', 'Novo Local Atualizado');
+  });
+
+  it('não deve atualizar evento com data no passado', async () => {
+    const created = await request(app)
+      .post('/api/v1/events')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...validEvent, name: 'Evento Data Passado', date: '2028-03-01T20:00:00.000Z' });
+
+    const res = await request(app)
+      .put(`/api/v1/events/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ date: '2020-01-01T20:00:00.000Z' });
+
+    expect(res.status).to.equal(400);
+  });
+
+  it('deve retornar 404 ao atualizar evento inexistente', async () => {
+    const res = await request(app)
+      .put('/api/v1/events/000000000000000000000000')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ venue: 'Teste' });
+
+    expect(res.status).to.equal(404);
+  });
+
+  it('não deve atualizar evento sem token', async () => {
+    const res = await request(app)
+      .put('/api/v1/events/000000000000000000000000')
+      .send({ venue: 'Teste' });
+
+    expect(res.status).to.equal(401);
+  });
 });

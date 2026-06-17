@@ -49,8 +49,31 @@ async function getEventById(id) {
 
   return event;
 }
+
+async function updateEvent(id, data) {
+  const event = await Event.findById(id);
+
+  if (!event) {
+    throw createHttpError(404, "Event not found.");
+  }
+
+  if (data.date !== undefined) {
+    const newDate = new Date(data.date);
+
+    if (Number.isNaN(newDate.getTime()) || newDate <= new Date()) {
+      throw createHttpError(400, "Event date must be in the future.");
+    }
+  }
+
+  Object.assign(event, data);
+  await event.save();
+
+  return event;
+}
+
 module.exports = {
   createEvent,
   listEvents,
-  getEventById
+  getEventById,
+  updateEvent
 };
