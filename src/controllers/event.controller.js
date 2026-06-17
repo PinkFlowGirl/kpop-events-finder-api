@@ -38,9 +38,19 @@ async function listEvents(req, res, next) {
   }
 }
 
+async function deleteEvent(req, res, next) {
+  try {
+    await eventService.deleteEvent(req.params.id);
+    res.status(200).json({ message: "Event deleted successfully." });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createEvent,
   getEventById,
   listEvents,
-  updateEvent
+  updateEvent,
+  deleteEvent
 };

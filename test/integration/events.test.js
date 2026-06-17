@@ -168,4 +168,50 @@ describe('Events API - /api/v1/events', () => {
 
     expect(res.status).to.equal(401);
   });
+
+  // DELETE /events/:id
+  it('deve deletar um evento existente', async () => {
+    const created = await request(app)
+      .post('/api/v1/events')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...validEvent, name: 'Evento Para Deletar Teste', date: '2028-04-01T20:00:00.000Z' });
+
+    const res = await request(app)
+      .delete(`/api/v1/events/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).to.equal(200);
+  });
+
+  it('não deve encontrar evento após deleção', async () => {
+    const created = await request(app)
+      .post('/api/v1/events')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...validEvent, name: 'Evento Verificar Delecao', date: '2028-04-15T20:00:00.000Z' });
+
+    await request(app)
+      .delete(`/api/v1/events/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    const res = await request(app)
+      .get(`/api/v1/events/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).to.equal(404);
+  });
+
+  it('deve retornar 404 ao deletar evento inexistente', async () => {
+    const res = await request(app)
+      .delete('/api/v1/events/000000000000000000000000')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).to.equal(404);
+  });
+
+  it('não deve deletar evento sem token', async () => {
+    const res = await request(app)
+      .delete('/api/v1/events/000000000000000000000000');
+
+    expect(res.status).to.equal(401);
+  });
 });
