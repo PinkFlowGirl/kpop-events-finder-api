@@ -71,9 +71,20 @@ async function updateEvent(id, data) {
   return event;
 }
 
+async function deleteEvent(id) {
+  const event = await Event.findById(id);
+
+  if (!event) {
+    throw createHttpError(404, "Event not found.");
+  }
+
+  await event.deleteOne();
+}
+
 module.exports = {
   createEvent,
   listEvents,
   getEventById,
-  updateEvent
+  updateEvent,
+  deleteEvent
 };
