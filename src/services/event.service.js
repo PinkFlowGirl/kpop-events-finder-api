@@ -40,7 +40,17 @@ async function listEvents() {
   return Event.find({ date: { $gte: new Date() } }).sort({ date: 1 });
 }
 
+async function getEventById(id) {
+  const event = await Event.findById(id);
+
+  if (!event) {
+    throw createHttpError(404, "Event not found.");
+  }
+
+  return event;
+}
 module.exports = {
   createEvent,
-  listEvents
+  listEvents,
+  getEventById
 };
