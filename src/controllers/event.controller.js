@@ -18,6 +18,17 @@ async function getEventById(req, res, next) {
   }
 }
 
+
+async function updateEvent(req, res, next) {
+  try {
+    const result = await eventService.updateEvent(req.params.id, req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 async function listEvents(req, res, next) {
   try {
     const result = await eventService.listEvents();
@@ -30,5 +41,6 @@ async function listEvents(req, res, next) {
 module.exports = {
   createEvent,
   getEventById,
-  listEvents
+  listEvents,
+  updateEvent
 };
