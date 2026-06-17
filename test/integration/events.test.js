@@ -91,4 +91,34 @@ describe('Events API - /api/v1/events', () => {
 
     expect(res.status).to.equal(401);
   });
+
+  // GET /events/:id
+  it('deve buscar um evento por ID válido', async () => {
+    const created = await request(app)
+      .post('/api/v1/events')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...validEvent, name: 'Evento Busca ID', date: '2028-01-01T20:00:00.000Z' });
+
+    const res = await request(app)
+      .get(`/api/v1/events/${created.body._id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('name', 'Evento Busca ID');
+  });
+
+  it('deve retornar 404 para ID inexistente', async () => {
+    const res = await request(app)
+      .get('/api/v1/events/000000000000000000000000')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).to.equal(404);
+  });
+
+  it('não deve buscar evento sem token', async () => {
+    const res = await request(app)
+      .get('/api/v1/events/000000000000000000000000');
+
+    expect(res.status).to.equal(401);
+  });
 });
