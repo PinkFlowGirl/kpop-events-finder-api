@@ -223,178 +223,331 @@
           }
         }
       }
+    },
+    "/api/v1/events/{id}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Get a Kpop event by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Update a Kpop event",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Delete a Kpop event",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        }
+      }
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+  "securitySchemes": {
+    "bearerAuth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT"
+    }
+  },
+  "schemas": {
+    "HealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "ok"
+        },
+        "service": {
+          "type": "string",
+          "example": "kpop-events-finder-api"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
-    "schemas": {
-      "HealthResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "ok"
-          },
-          "service": {
-            "type": "string",
-            "example": "kpop-events-finder-api"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
+    "RegisterRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "password"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Kim Mina"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "mina@example.com"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "example": "StrongPass1"
         }
-      },
-      "RegisterRequest": {
-        "type": "object",
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Kim Mina"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "mina@example.com"
-          },
-          "password": {
-            "type": "string",
-            "format": "password",
-            "example": "strong-password"
-          }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "mina@example.com"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "example": "StrongPass1"
         }
-      },
-      "LoginRequest": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "mina@example.com"
-          },
-          "password": {
-            "type": "string",
-            "format": "password",
-            "example": "strong-password"
-          }
+      }
+    },
+    "AuthResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/components/schemas/User"
+        },
+        "token": {
+          "type": "string"
         }
-      },
-      "AuthResponse": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/User"
-          },
-          "token": {
-            "type": "string"
-          }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
-      },
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
+      }
+    },
+    "CreateEventRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "artist",
+        "date",
+        "venue",
+        "country"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Music Bank World Tour"
+        },
+        "artist": {
+          "type": "string",
+          "example": "IVE"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2026-08-15T20:00:00.000Z"
+        },
+        "venue": {
+          "type": "string",
+          "example": "Allianz Parque"
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2,
+          "example": "BR"
         }
-      },
-      "CreateEventRequest": {
-        "type": "object",
-        "required": [
-          "name",
-          "artist",
-          "date",
-          "venue",
-          "country"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Music Bank World Tour"
-          },
-          "artist": {
-            "type": "string",
-            "example": "IVE"
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-08-15T20:00:00.000Z"
-          },
-          "venue": {
-            "type": "string",
-            "example": "Allianz Parque"
-          },
-          "country": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 2,
-            "example": "BR"
-          }
+      }
+    },
+    "UpdateEventRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Music Bank World Tour"
+        },
+        "artist": {
+          "type": "string",
+          "example": "IVE"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2026-08-15T20:00:00.000Z"
+        },
+        "venue": {
+          "type": "string",
+          "example": "Allianz Parque"
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2,
+          "example": "BR"
         }
-      },
-      "Event": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "artist": {
-            "type": "string"
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "venue": {
-            "type": "string"
-          },
-          "country": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
+      }
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "venue": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     }
   }
+}
 }
